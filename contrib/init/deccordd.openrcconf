@@ -1,0 +1,33 @@
+# /etc/conf.d/deccordd: config file for /etc/init.d/deccordd
+
+# Config file location
+#BITCOIND_CONFIGFILE="/etc/deccord/deccord.conf"
+
+# What directory to write pidfile to?  (created and owned by $BITCOIND_USER)
+#BITCOIND_PIDDIR="/var/run/deccordd"
+
+# What filename to give the pidfile
+#BITCOIND_PIDFILE="${BITCOIND_PIDDIR}/deccordd.pid"
+
+# Where to write deccordd data (be mindful that the blockchain is large)
+#BITCOIND_DATADIR="/var/lib/deccordd"
+
+# User and group to own deccordd process
+#BITCOIND_USER="deccord"
+#BITCOIND_GROUP="deccord"
+
+# Path to deccordd executable
+#BITCOIND_BIN="/usr/bin/deccordd"
+
+# Nice value to run deccordd under
+#BITCOIND_NICE=0
+
+# Additional options (avoid -conf and -datadir, use flags above)
+#BITCOIND_OPTS=""
+
+# The timeout in seconds OpenRC will wait for deccordd to terminate
+# after a SIGTERM has been raised.
+# Note that this will be mapped as argument to start-stop-daemon's
+# '--retry' option, which means you can specify a retry schedule
+# here. For more information see man 8 start-stop-daemon.
+BITCOIND_SIGTERM_TIMEOUT=60
