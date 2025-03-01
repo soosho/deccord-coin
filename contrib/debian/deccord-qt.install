@@ -1,0 +1,6 @@
+usr/local/bin/deccord-qt usr/bin
+share/pixmaps/deccord32.xpm usr/share/pixmaps
+share/pixmaps/deccord16.xpm usr/share/pixmaps
+share/pixmaps/deccord128.png usr/share/pixmaps
+debian/deccord-qt.desktop usr/share/applications
+debian/deccord-qt.protocol usr/share/kde4/services/
