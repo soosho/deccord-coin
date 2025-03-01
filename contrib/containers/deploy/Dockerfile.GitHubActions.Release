@@ -1,0 +1,42 @@
+FROM ubuntu:focal
+LABEL maintainer="Deccord Developers <dev@deccord.org>"
+LABEL description="Dockerised Deccord"
+
+ARG USER_ID
+ARG GROUP_ID
+ARG TAG
+
+ENV HOME /home/deccord
+
+# add user with specified (or default) user/group ids
+ENV USER_ID ${USER_ID:-1000}
+ENV GROUP_ID ${GROUP_ID:-1000}
+RUN groupadd -g ${GROUP_ID} deccord && \
+    useradd -u ${USER_ID} -g deccord -s /bin/bash -m -d /home/deccord deccord  && \
+    mkdir /home/deccord/.deccord && \
+    chown ${USER_ID}:${GROUP_ID} -R /home/deccord
+
+RUN apt-get update && \
+    apt-get -y install --no-install-recommends \
+    wget \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN mach=$(uname -m) \
+      && case $mach in aarch64) arch="aarch64-linux-gnu"; ;; x86_64) arch="x86_64-linux-gnu"; ;;  *) echo "ERROR: Machine type $mach not supported."; ;; esac \
+      && wget https://github.com/Deccord/releases/download/v${TAG}/deccord-${TAG}-$arch.tar.gz -P /tmp \
+      && tar -xvf /tmp/deccord-*.tar.gz -C /tmp/ \
+      && cp /tmp/deccord*/bin/*  /usr/local/bin \
+      && rm -rf /tmp/deccord* \
+      && chmod a+x /usr/local/bin/*
+
+USER deccord
+
+VOLUME ["/home/deccord"]
+
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+ENTRYPOINT ["/docker-entrypoint.sh"]
+
+EXPOSE 22945 9999 32945 32946
+
+WORKDIR /home/deccord
