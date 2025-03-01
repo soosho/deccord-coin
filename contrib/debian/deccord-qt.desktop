@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Name=Deccord Core
+Comment=Deccord P2P Cryptocurrency
+Comment[de]=Verbinde mit dem Deccord peer-to-peer Netzwerk
+Comment[fr]=Deccord, monnaie virtuelle cryptographique pair à pair
+Comment[tr]=Deccord, eşten eşe kriptografik sanal para birimi
+Exec=deccord-qt %u
+Terminal=false
+Type=Application
+Icon=deccord128
+MimeType=x-scheme-handler/deccord;
+Categories=Office;Finance;P2P;Network;Qt;
+StartupWMClass=Deccord-qt
