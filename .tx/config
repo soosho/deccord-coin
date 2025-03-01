@@ -1,0 +1,7 @@
+[main]
+host = https://www.transifex.com
+
+[deccord.deccord_ents]
+file_filter = src/qt/locale/deccord_<lang>.ts
+source_file = src/qt/locale/deccord_en.xlf
+source_lang = en
