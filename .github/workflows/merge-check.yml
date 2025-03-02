@@ -7,6 +7,7 @@ on:
 jobs:
   check_merge:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -20,10 +21,10 @@ jobs:
 
       - name: Check merge --ff-only
         run: |
-          git fetch origin master:master
-          git checkout master
+          git fetch origin
+          git checkout master || git checkout -b master origin/master
           if [ "${{ github.event_name }}" == "pull_request" ]; then
             git merge --ff-only ${{ github.event.pull_request.head.sha }}
           else
-            git merge --ff-only ${{ github.sha }}
+            git merge --ff-only origin/master
           fi
