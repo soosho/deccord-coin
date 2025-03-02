@@ -115,12 +115,12 @@ RUN pip3 install \
     pyzmq==22.3.0 \
     vulture==2.3
 
-ARG DASH_HASH_VERSION=1.4.0
+ARG DECCORD_HASH_VERSION=1.4.0
 RUN set -ex; \
     cd /tmp; \
-    git clone --depth 1 --no-tags --branch=${DASH_HASH_VERSION} https://github.com/dashpay/dash_hash; \
-    cd dash_hash && pip3 install -r requirements.txt .; \
-    cd .. && rm -rf dash_hash
+    git clone --depth 1 --no-tags --branch=${DECCORD_HASH_VERSION} https://github.com/deccord/deccord_hash; \
+    cd deccord_hash && pip3 install -r requirements.txt .; \
+    cd .. && rm -rf deccord_hash
 
 ARG CPPCHECK_VERSION=2.13.0
 RUN set -ex; \
@@ -142,11 +142,11 @@ ENV PATH="/opt/shellcheck:${PATH}"
 ARG USER_ID=1000
 ARG GROUP_ID=1000
 RUN set -ex; \
-    groupadd -g ${GROUP_ID} dash; \
-    useradd -u ${USER_ID} -g dash -s /bin/bash -m -d /home/dash dash; \
-    mkdir -p /home/dash/.config/gdb; \
-    echo "add-auto-load-safe-path /usr/lib/llvm-${LLVM_VERSION}/lib" | tee /home/dash/.config/gdb/gdbinit; \
-    chown ${USER_ID}:${GROUP_ID} -R /home/dash
+    groupadd -g ${GROUP_ID} deccord; \
+    useradd -u ${USER_ID} -g deccord -s /bin/bash -m -d /home/deccord deccord; \
+    mkdir -p /home/deccord/.config/gdb; \
+    echo "add-auto-load-safe-path /usr/lib/llvm-${LLVM_VERSION}/lib" | tee /home/deccord/.config/gdb/gdbinit; \
+    chown ${USER_ID}:${GROUP_ID} -R /home/deccord
 
 # Packages needed for all target builds
 RUN apt-get update && apt-get install $APT_ARGS \
@@ -179,7 +179,7 @@ RUN \
   exit 0
 
 RUN \
-  mkdir -p /src/dash && \
+  mkdir -p /src/deccord && \
   mkdir -p /cache/ccache && \
   mkdir /cache/depends && \
   mkdir /cache/sdk-sources && \
@@ -188,6 +188,6 @@ RUN \
   chown ${USER_ID}:${GROUP_ID} /cache && \
   chown ${USER_ID}:${GROUP_ID} -R /cache
 
-WORKDIR /src/dash
+WORKDIR /src/deccord
 
-USER dash
+USER deccord
