@@ -1,0 +1,22 @@
+QT_TS = \
+  qt/locale/deccord_ar.ts \
+  qt/locale/deccord_bg.ts \
+  qt/locale/deccord_de.ts \
+  qt/locale/deccord_en.ts \
+  qt/locale/deccord_es.ts \
+  qt/locale/deccord_fi.ts \
+  qt/locale/deccord_fr.ts \
+  qt/locale/deccord_it.ts \
+  qt/locale/deccord_ja.ts \
+  qt/locale/deccord_ko.ts \
+  qt/locale/deccord_nl.ts \
+  qt/locale/deccord_pl.ts \
+  qt/locale/deccord_pt.ts \
+  qt/locale/deccord_ro.ts \
+  qt/locale/deccord_ru.ts \
+  qt/locale/deccord_sk.ts \
+  qt/locale/deccord_th.ts \
+  qt/locale/deccord_tr.ts \
+  qt/locale/deccord_vi.ts \
+  qt/locale/deccord_zh_CN.ts \
+  qt/locale/deccord_zh_TW.ts

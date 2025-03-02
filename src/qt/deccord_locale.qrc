@@ -1,0 +1,25 @@
+<!DOCTYPE RCC><RCC version="1.0">
+    <qresource prefix="/translations">
+        <file alias="ar">locale/deccord_ar.qm</file>
+        <file alias="bg">locale/deccord_bg.qm</file>
+        <file alias="de">locale/deccord_de.qm</file>
+        <file alias="en">locale/deccord_en.qm</file>
+        <file alias="es">locale/deccord_es.qm</file>
+        <file alias="fi">locale/deccord_fi.qm</file>
+        <file alias="fr">locale/deccord_fr.qm</file>
+        <file alias="it">locale/deccord_it.qm</file>
+        <file alias="ja">locale/deccord_ja.qm</file>
+        <file alias="ko">locale/deccord_ko.qm</file>
+        <file alias="nl">locale/deccord_nl.qm</file>
+        <file alias="pl">locale/deccord_pl.qm</file>
+        <file alias="pt">locale/deccord_pt.qm</file>
+        <file alias="ro">locale/deccord_ro.qm</file>
+        <file alias="ru">locale/deccord_ru.qm</file>
+        <file alias="sk">locale/deccord_sk.qm</file>
+        <file alias="th">locale/deccord_th.qm</file>
+        <file alias="tr">locale/deccord_tr.qm</file>
+        <file alias="vi">locale/deccord_vi.qm</file>
+        <file alias="zh_CN">locale/deccord_zh_CN.qm</file>
+        <file alias="zh_TW">locale/deccord_zh_TW.qm</file>
+    </qresource>
+</RCC>
