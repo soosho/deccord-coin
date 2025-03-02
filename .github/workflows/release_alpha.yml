@@ -50,7 +50,7 @@ jobs:
 
     - name: Get branch name
       id: branch-name
-      uses: tj-actions/branch-names@v5
+      uses: tj-actions/branch-names@v8
 
     - name: Prepare Gitian
       run: deccord/contrib/gitian-build.py --setup "dummy" "${{ steps.branch-name.outputs.current_branch }}"
