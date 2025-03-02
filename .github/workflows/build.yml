@@ -143,15 +143,27 @@ jobs:
           - build_target: linux64_ubsan
             host: x86_64-pc-linux-gnu
             depends_on: linux64
+
     container:
       image: ghcr.io/${{ needs.build-image.outputs.repo-name }}/deccordcore-ci-runner:${{ needs.build-image.outputs.image-tag }}
       options: --user root
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
+
+      - name: Fix permissions
+        run: |
+          chmod -R 777 .
+          # Specifically ensure build scripts are executable
+          chmod +x ci/test/00_setup_env.sh
+          chmod +x ci/deccord/*.sh
+          chmod +x depends/config.guess
+          chmod +x depends/config.sub
+          find . -name "*.sh" -exec chmod +x {} \;
 
       - name: Restore depends cache
         uses: actions/cache/restore@v4
