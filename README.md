@@ -1,14 +1,10 @@
-Deccord Core staging tree 18.0
+Deccord Core staging tree 20.0
 ===========================
 
-|CI|master|develop|
-|-|-|-|
-|Gitlab|[![Build Status](https://gitlab.com/deccord/deccord/badges/master/pipeline.svg)](https://gitlab.com/deccord/deccord/-/tree/master)|[![Build Status](https://gitlab.com/deccord/deccord/badges/develop/pipeline.svg)](https://gitlab.com/deccord/deccord/-/tree/develop)|
-
-https://www.deccord.org
+https://www.deccord.com
 
 For an immediately usable, binary version of the Deccord Core software, see
-https://www.deccord.org/downloads/.
+https://www.deccord.com.
 
 Further information about Deccord Core is available in the [doc folder](/doc).
 
