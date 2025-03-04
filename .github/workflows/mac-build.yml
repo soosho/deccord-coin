@@ -28,7 +28,7 @@ jobs:
 
       - name: Setup dependencies for macOS
         run: |
-          brew install automake cmake curl libtool pkg-config python3 bison berkeley-db@4
+          brew install automake cmake curl libtool pkg-config python3 bison berkeley-db@4 openssl
 
       - name: Cache Depends
         uses: actions/cache@v4
@@ -37,14 +37,6 @@ jobs:
           key: ${{ runner.os }}-depends-${{ github.run_id }}
           restore-keys: |
             ${{ runner.os }}-depends-
-
-      - name: Cache Berkeley DB
-        uses: actions/cache@v4
-        with:
-          path: deccord/db4
-          key: ${{ runner.os }}-db4-${{ github.run_id }}
-          restore-keys: |
-            ${{ runner.os }}-db4-
 
       - name: Install Berkeley DB
         run: |
@@ -67,10 +59,10 @@ jobs:
         run: |
           cd deccord
           ./autogen.sh
-          export BDB_PREFIX="${PWD}/db4"
+          export BDB_PREFIX="$(brew --prefix berkeley-db@4)"
+          export LDFLAGS="-L${BDB_PREFIX}/lib -L$(brew --prefix openssl)/lib"
+          export CPPFLAGS="-I${BDB_PREFIX}/include -I$(brew --prefix openssl)/include"
           CONFIG_SITE=$PWD/depends/x86_64-apple-darwin/share/config.site ./configure --prefix=/ \
-            BDB_LIBS="-L${BDB_PREFIX}/lib -ldb_cxx-4.8" \
-            BDB_CFLAGS="-I${BDB_PREFIX}/include" \
             --disable-tests --disable-shared
           if [ -f "src/deccordd" ]; then
             echo "Skipping make, using cached binaries."
