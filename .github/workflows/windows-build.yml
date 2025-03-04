@@ -31,8 +31,9 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y make automake cmake curl g++-multilib libtool \
             binutils-gold bsdmainutils pkg-config python3 patch bison \
-            g++-mingw-w64-x86-64 mingw-w64-tools
+            g++-mingw-w64-x86-64 mingw-w64-tools gcc-mingw-w64
           sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
+          sudo update-alternatives --set x86_64-w64-mingw32-gcc /usr/bin/x86_64-w64-mingw32-gcc-posix
 
       - name: Install Berkeley DB
         run: |
@@ -60,10 +61,11 @@ jobs:
           ./autogen.sh
           export BDB_PREFIX="${PWD}/db4"
           CONFIG_SITE=$PWD/depends/x86_64-w64-mingw32/share/config.site ./configure --prefix=/ \
-            BDB_LIBS="-L${BDB_PREFIX}/lib -ldb_cxx-4.8" \
-            BDB_CFLAGS="-I${BDB_PREFIX}/include" \
-            --disable-tests \
-            CXXFLAGS="-std=c++11"
+            --disable-tests --disable-shared \
+            --enable-static \
+            CXXFLAGS="-std=gnu++17 -static" \
+            CFLAGS="-O2 -static" \
+            LDFLAGS="-static-libgcc -static-libstdc++ -static"
           make -j$(nproc)
 
       - name: Strip Binaries
