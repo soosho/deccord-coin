@@ -35,8 +35,12 @@ jobs:
           cd deccord
           PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g')
           cd depends
-          export CXXFLAGS="-Wno-enum-constexpr-conversion"
-          export CFLAGS="-Wno-enum-constexpr-conversion"
+          # Configure boost build with specific flags
+          export BOOST_CXXFLAGS="-std=c++17 -Wno-error=enum-constexpr-conversion"
+          export CXXFLAGS="-std=c++17 -Wno-enum-constexpr-conversion -Wno-error"
+          export CFLAGS="-Wno-enum-constexpr-conversion -Wno-error"
+          # Use native toolchain for boost
+          export NO_BOOST_TOOLCHAIN=1
           make HOST=x86_64-apple-darwin -j$(sysctl -n hw.ncpu)
           cd ..
 
