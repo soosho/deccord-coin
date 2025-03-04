@@ -27,7 +27,7 @@ jobs:
           chmod -R 777 .
 
       - name: Cache dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: depends/
           key: ${{ runner.os }}-depends-${{ github.run_id }}
