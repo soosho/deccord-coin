@@ -1,0 +1,54 @@
+name: Build Deccord Wallet for macOS
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+
+      - name: Set up Homebrew
+        run: |
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+        
+      - name: Install dependencies
+        run: |
+          brew update
+          brew install automake libtool boost gmp pkg-config libevent
+          brew install llvm
+          export CC=$(brew --prefix llvm)/bin/clang
+          export CXX=$(brew --prefix llvm)/bin/clang++
+
+      - name: Clone Deccord repository
+        run: git clone https://github.com/Deccord/deccord.git
+
+      - name: Install optional dependencies
+        run: |
+          brew install berkeley-db@4 sqlite qt@5 qrencode miniupnpc libnatpmp zeromq
+
+      - name: Build Deccord
+        run: |
+          cd deccord
+          ./autogen.sh
+          ./configure --with-bdb --with-gui --without-wallet # Modify based on your requirements
+          make -j$(sysctl -n hw.ncpu)
+        
+      - name: Create the deployable .dmg
+        run: |
+          cd deccord
+          make deploy
+
+      - name: Upload macOS build artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: deccord-macos-build
+          path: ./deccord/deploy/*.dmg
