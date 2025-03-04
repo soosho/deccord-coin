@@ -30,23 +30,6 @@ jobs:
         run: |
           brew install automake cmake curl libtool pkg-config python3 bison berkeley-db@4 openssl
 
-      - name: Cache Depends
-        uses: actions/cache@v4
-        with:
-          path: deccord/depends
-          key: ${{ runner.os }}-depends-${{ github.run_id }}
-          restore-keys: |
-            ${{ runner.os }}-depends-
-
-      - name: Install Berkeley DB
-        run: |
-          cd deccord
-          export LDFLAGS="-L$(brew --prefix berkeley-db@4)/lib -L$(brew --prefix openssl)/lib"
-          export CPPFLAGS="-I$(brew --prefix berkeley-db@4)/include -I$(brew --prefix openssl)/include"
-          export CFLAGS="-w -DHAVE_PTHREAD_MUTEX_ADAPTIVE_NP"
-          export BDB_PREFIX="${PWD}/db4"
-          ./contrib/install_db4.sh `pwd`
-
       - name: Build depends
         run: |
           cd deccord
