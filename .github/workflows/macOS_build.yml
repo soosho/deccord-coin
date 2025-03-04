@@ -52,7 +52,7 @@ jobs:
           zip -r deccord-20.0.1-i686-pc-linux-gnu.zip deccord-20.0.1-i686-pc-linux-gnu
 
       - name: Upload Linux 32-bit Build Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: deccord-linux-i686-build
           path: |
@@ -107,7 +107,7 @@ jobs:
           zip -r deccord-20.0.1-x86_64-pc-linux-gnu.zip deccord-20.0.1-x86_64-pc-linux-gnu
 
       - name: Upload Linux Build Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: deccord-linux-x86_64-build
           path: |
@@ -164,7 +164,7 @@ jobs:
           zip -r deccord-20.0.1-windows-x86_64.zip deccord-20.0.1-windows-x86_64
 
       - name: Upload Windows Build Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: deccord-windows-x86_64-build
           path: |
@@ -218,7 +218,7 @@ jobs:
           zip -r deccord-20.0.1-mac-x86_64.zip deccord-20.0.1-mac-x86_64
 
       - name: Upload macOS Build Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: deccord-mac-x86_64-build
           path: |
@@ -272,7 +272,7 @@ jobs:
           zip -r deccord-20.0.1-arm64-mac.zip deccord-20.0.1-arm64-mac
 
       - name: Upload ARM macOS Build Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: deccord-arm64-mac-build
           path: |
