@@ -72,12 +72,14 @@ jobs:
 
       - name: Strip Binaries
         run: |
-          strip src/deccordd.exe src/deccord-cli.exe src/deccord-tx.exe src/qt/deccord-qt.exe
+          cd deccord
+          x86_64-w64-mingw32-strip src/deccordd.exe src/deccord-cli.exe src/deccord-tx.exe src/qt/deccord-qt.exe
 
       - name: Create tar.gz and zip archives
         run: |
-          mkdir -p deccord-20.0.1-windows-x86_64
-          cp src/deccordd.exe src/deccord-cli.exe src/deccord-tx.exe src/qt/deccord-qt.exe deccord-20.0.1-windows-x86_64/
+          cd deccord
+          mkdir -p deccord-20.0.1-windows-x86_64/bin
+          cp src/deccordd.exe src/deccord-cli.exe src/deccord-tx.exe src/qt/deccord-qt.exe deccord-20.0.1-windows-x86_64/bin/
           tar -czvf deccord-20.0.1-windows-x86_64.tar.gz deccord-20.0.1-windows-x86_64
           zip -r deccord-20.0.1-windows-x86_64.zip deccord-20.0.1-windows-x86_64
 
@@ -86,5 +88,5 @@ jobs:
         with:
           name: deccord-windows-x86_64-build
           path: |
-            deccord-20.0.1-windows-x86_64.tar.gz
-            deccord-20.0.1-windows-x86_64.zip
+            deccord/deccord-20.0.1-windows-x86_64.tar.gz
+            deccord/deccord-20.0.1-windows-x86_64.zip
