@@ -1,0 +1,67 @@
+name: macOS Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build for macOS
+    runs-on: macos-latest
+    steps:
+      - name: Clean workspace
+        run: |
+          rm -rf deccord
+
+      - name: Clone Deccord repository
+        run: |
+          git clone https://github.com/Deccord/deccord.git
+          cd deccord
+          chmod -R 777 .
+
+      - name: Setup dependencies for macOS
+        run: |
+          brew install automake cmake curl libtool pkg-config python3 bison
+
+      - name: Install Berkeley DB
+        run: |
+          cd deccord
+          ./contrib/install_db4.sh `pwd`
+          export BDB_PREFIX="${PWD}/db4"
+
+      - name: Build depends
+        run: |
+          cd deccord
+          PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g')
+          cd depends
+          make HOST=x86_64-apple-darwin -j$(nproc)
+          cd ..
+
+      - name: Build Deccord for macOS
+        run: |
+          cd deccord
+          ./autogen.sh
+          export BDB_PREFIX="${PWD}/db4"
+          CONFIG_SITE=$PWD/depends/x86_64-apple-darwin/share/config.site ./configure --prefix=/ \
+            BDB_LIBS="-L${BDB_PREFIX}/lib -ldb_cxx-4.8" \
+            BDB_CFLAGS="-I${BDB_PREFIX}/include" \
+            --disable-tests --disable-shared
+          make
+
+      - name: Strip Binaries
+        run: |
+          strip src/deccordd src/deccord-cli src/deccord-tx src/qt/deccord-qt
+
+      - name: Create tar.gz and zip archives
+        run: |
+          mkdir -p deccord-20.0.1-mac-x86_64
+          cp src/deccordd src/deccord-cli src/deccord-tx src/qt/deccord-qt deccord-20.0.1-mac-x86_64/
+          tar -czvf deccord-20.0.1-mac-x86_64.tar.gz deccord-20.0.1-mac-x86_64
+          zip -r deccord-20.0.1-mac-x86_64.zip deccord-20.0.1-mac-x86_64
+
+      - name: Upload macOS Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: deccord-mac-x86_64-build
+          path: |
+            deccord-20.0.1-mac-x86_64.tar.gz
+            deccord-20.0.1-mac-x86_64.zip

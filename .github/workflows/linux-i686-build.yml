@@ -1,0 +1,68 @@
+name: Linux 32-bit Build
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build for Linux 32-bit (i686-pc-linux-gnu)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clean workspace
+        run: |
+          rm -rf deccord
+          
+      - name: Clone Deccord repository
+        run: |
+          git clone https://github.com/Deccord/deccord.git
+          cd deccord
+          chmod -R 777 . 
+
+      - name: Setup dependencies for Linux 32-bit
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make automake cmake curl g++-multilib libtool binutils-gold bsdmainutils pkg-config python3 patch bison
+
+      - name: Install Berkeley DB
+        run: |
+          cd deccord
+          ./contrib/install_db4.sh `pwd`
+          export BDB_PREFIX="${PWD}/db4"
+
+      - name: Build depends
+        run: |
+          cd deccord
+          PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g')
+          cd depends
+          make HOST=i686-pc-linux-gnu -j$(nproc)
+          cd ..
+
+      - name: Build Deccord for Linux 32-bit
+        run: |
+          cd deccord
+          ./autogen.sh
+          export BDB_PREFIX="${PWD}/db4"
+          CONFIG_SITE=$PWD/depends/i686-pc-linux-gnu/share/config.site ./configure --prefix=/ \
+            BDB_LIBS="-L${BDB_PREFIX}/lib -ldb_cxx-4.8" \
+            BDB_CFLAGS="-I${BDB_PREFIX}/include" \
+            --disable-tests --disable-shared
+          make
+
+      - name: Strip Binaries
+        run: |
+          strip src/deccordd src/deccord-cli src/deccord-tx src/qt/deccord-qt
+
+      - name: Create tar.gz and zip archives
+        run: |
+          mkdir -p deccord-20.0.1-i686-pc-linux-gnu
+          cp src/deccordd src/deccord-cli src/deccord-tx src/qt/deccord-qt deccord-20.0.1-i686-pc-linux-gnu/
+          tar -czvf deccord-20.0.1-i686-pc-linux-gnu.tar.gz deccord-20.0.1-i686-pc-linux-gnu
+          zip -r deccord-20.0.1-i686-pc-linux-gnu.zip deccord-20.0.1-i686-pc-linux-gnu
+
+      - name: Upload Linux 32-bit Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: deccord-linux-i686-build
+          path: |
+            deccord-20.0.1-i686-pc-linux-gnu.tar.gz
+            deccord-20.0.1-i686-pc-linux-gnu.zip
