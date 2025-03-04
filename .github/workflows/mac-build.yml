@@ -8,6 +8,14 @@ jobs:
     name: Build for macOS
     runs-on: macos-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
       - name: Clean workspace
         run: |
           rm -rf deccord
@@ -22,6 +30,22 @@ jobs:
         run: |
           brew install automake cmake curl libtool pkg-config python3 bison
 
+      - name: Cache Depends
+        uses: actions/cache@v4
+        with:
+          path: deccord/depends
+          key: ${{ runner.os }}-depends-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-depends-
+
+      - name: Cache Berkeley DB
+        uses: actions/cache@v4
+        with:
+          path: deccord/db4
+          key: ${{ runner.os }}-db4-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-db4-
+
       - name: Install Berkeley DB
         run: |
           cd deccord
@@ -33,7 +57,7 @@ jobs:
           cd deccord
           PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g')
           cd depends
-          make HOST=x86_64-apple-darwin -j$(nproc)
+          make HOST=x86_64-apple-darwin -j$(sysctl -n hw.ncpu)
           cd ..
 
       - name: Build Deccord for macOS
@@ -45,23 +69,40 @@ jobs:
             BDB_LIBS="-L${BDB_PREFIX}/lib -ldb_cxx-4.8" \
             BDB_CFLAGS="-I${BDB_PREFIX}/include" \
             --disable-tests --disable-shared
-          make
+          if [ -f "src/deccordd" ]; then
+            echo "Skipping make, using cached binaries."
+          else
+            make -j$(sysctl -n hw.ncpu)
+          fi
 
       - name: Strip Binaries
         run: |
+          cd deccord
           strip src/deccordd src/deccord-cli src/deccord-tx src/qt/deccord-qt
 
-      - name: Create tar.gz and zip archives
+      - name: Create Release Structure
         run: |
-          mkdir -p deccord-20.0.1-mac-x86_64
-          cp src/deccordd src/deccord-cli src/deccord-tx src/qt/deccord-qt deccord-20.0.1-mac-x86_64/
-          tar -czvf deccord-20.0.1-mac-x86_64.tar.gz deccord-20.0.1-mac-x86_64
-          zip -r deccord-20.0.1-mac-x86_64.zip deccord-20.0.1-mac-x86_64
+          cd deccord
+          mkdir -p deccord-20.0.1-x86_64-apple-darwin/bin
+          cp src/deccordd src/deccord-cli src/deccord-tx src/qt/deccord-qt deccord-20.0.1-x86_64-apple-darwin/bin/
+          tar -czvf deccord-20.0.1-x86_64-apple-darwin.tar.gz deccord-20.0.1-x86_64-apple-darwin
+          zip -r deccord-20.0.1-x86_64-apple-darwin.zip deccord-20.0.1-x86_64-apple-darwin
 
-      - name: Upload macOS Build Artifacts
+      - name: Upload macOS Build Artifact (tar.gz)
         uses: actions/upload-artifact@v4
         with:
-          name: deccord-mac-x86_64-build
-          path: |
-            deccord-20.0.1-mac-x86_64.tar.gz
-            deccord-20.0.1-mac-x86_64.zip
+          name: deccord-20.0.1-x86_64-apple-darwin-tar
+          path: deccord/deccord-20.0.1-x86_64-apple-darwin.tar.gz
+
+      - name: Upload macOS Build Artifact (zip)
+        uses: actions/upload-artifact@v4
+        with:
+          name: deccord-20.0.1-x86_64-apple-darwin-zip
+          path: deccord/deccord-20.0.1-x86_64-apple-darwin.zip
+
+      - name: Upload Partial Build Artifacts on Failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: partial-build-mac-${{ github.run_id }}
+          path: deccord/src
