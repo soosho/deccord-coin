@@ -49,6 +49,9 @@ jobs:
       - name: Install Berkeley DB
         run: |
           cd deccord
+          export LDFLAGS="-L$(brew --prefix openssl)/lib"
+          export CPPFLAGS="-I$(brew --prefix openssl)/include"
+          export CFLAGS="-w"
           ./contrib/install_db4.sh `pwd`
           export BDB_PREFIX="${PWD}/db4"
 
