@@ -33,20 +33,8 @@ jobs:
       - name: Build depends
         run: |
           cd deccord
-          PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g')
           cd depends
-          # Configure boost build with specific flags
-          export BOOST_CXXFLAGS="-std=c++17 -Wno-error=enum-constexpr-conversion -Wno-error"
-          export BOOST_CFLAGS="-Wno-error"
-          export CXXFLAGS="-std=c++17 -Wno-enum-constexpr-conversion -Wno-error"
-          export CFLAGS="-Wno-enum-constexpr-conversion -Wno-error"
-          # Use native toolchain for boost
-          export NO_BOOST_TOOLCHAIN=1
-          export NO_QT=1  # Build without Qt first to isolate boost issues
-          # Clean any previous build artifacts
-          make clean
-          # Build with verbose output
-          make HOST=x86_64-apple-darwin V=1 -j$(sysctl -n hw.ncpu)
+          make -j$(sysctl -n hw.ncpu) HOST=x86_64-apple-darwin
           cd ..
 
       - name: Build Deccord for macOS
@@ -54,16 +42,9 @@ jobs:
           cd deccord
           ./autogen.sh
           export BDB_PREFIX="$(brew --prefix berkeley-db@4)"
-          export LDFLAGS="-L${BDB_PREFIX}/lib -L$(brew --prefix openssl)/lib"
-          export CPPFLAGS="-I${BDB_PREFIX}/include -I$(brew --prefix openssl)/include"
-          export CXXFLAGS="-std=c++17 -Wno-enum-constexpr-conversion"
           CONFIG_SITE=$PWD/depends/x86_64-apple-darwin/share/config.site ./configure --prefix=/ \
-            --disable-tests --disable-shared
-          if [ -f "src/deccordd" ]; then
-            echo "Skipping make, using cached binaries."
-          else
-            make -j$(sysctl -n hw.ncpu)
-          fi
+            --disable-tests --disable-bench --enable-static
+          make -j$(sysctl -n hw.ncpu)
 
       - name: Strip Binaries
         run: |
