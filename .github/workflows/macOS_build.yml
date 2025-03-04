@@ -48,7 +48,7 @@ jobs:
           make deploy
 
       - name: Upload macOS build artifacts
-        uses: actions/upload-artifact@v3  # Updated to v3
+        uses: actions/upload-artifact@v4
         with:
           name: deccord-macos-build
           path: ./deccord/deploy/*.dmg
