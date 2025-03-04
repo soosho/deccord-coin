@@ -28,7 +28,7 @@ jobs:
 
       - name: Setup dependencies for macOS
         run: |
-          brew install automake cmake curl libtool pkg-config python3 bison
+          brew install automake cmake curl libtool pkg-config python3 bison berkeley-db@4
 
       - name: Cache Depends
         uses: actions/cache@v4
@@ -49,11 +49,11 @@ jobs:
       - name: Install Berkeley DB
         run: |
           cd deccord
-          export LDFLAGS="-L$(brew --prefix openssl)/lib"
-          export CPPFLAGS="-I$(brew --prefix openssl)/include"
-          export CFLAGS="-w"
-          ./contrib/install_db4.sh `pwd`
+          export LDFLAGS="-L$(brew --prefix berkeley-db@4)/lib -L$(brew --prefix openssl)/lib"
+          export CPPFLAGS="-I$(brew --prefix berkeley-db@4)/include -I$(brew --prefix openssl)/include"
+          export CFLAGS="-w -DHAVE_PTHREAD_MUTEX_ADAPTIVE_NP"
           export BDB_PREFIX="${PWD}/db4"
+          ./contrib/install_db4.sh `pwd`
 
       - name: Build depends
         run: |
