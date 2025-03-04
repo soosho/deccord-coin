@@ -36,12 +36,17 @@ jobs:
           PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g')
           cd depends
           # Configure boost build with specific flags
-          export BOOST_CXXFLAGS="-std=c++17 -Wno-error=enum-constexpr-conversion"
+          export BOOST_CXXFLAGS="-std=c++17 -Wno-error=enum-constexpr-conversion -Wno-error"
+          export BOOST_CFLAGS="-Wno-error"
           export CXXFLAGS="-std=c++17 -Wno-enum-constexpr-conversion -Wno-error"
           export CFLAGS="-Wno-enum-constexpr-conversion -Wno-error"
           # Use native toolchain for boost
           export NO_BOOST_TOOLCHAIN=1
-          make HOST=x86_64-apple-darwin -j$(sysctl -n hw.ncpu)
+          export NO_QT=1  # Build without Qt first to isolate boost issues
+          # Clean any previous build artifacts
+          make clean
+          # Build with verbose output
+          make HOST=x86_64-apple-darwin V=1 -j$(sysctl -n hw.ncpu)
           cd ..
 
       - name: Build Deccord for macOS
