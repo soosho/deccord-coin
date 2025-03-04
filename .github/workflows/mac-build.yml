@@ -28,13 +28,17 @@ jobs:
 
       - name: Setup dependencies for macOS
         run: |
-          brew install automake cmake curl libtool pkg-config python3 bison berkeley-db@4 openssl
+          brew install automake cmake curl libtool pkg-config python3 bison berkeley-db@4 openssl boost
 
       - name: Build depends
         run: |
           cd deccord
           cd depends
-          make -j$(sysctl -n hw.ncpu) HOST=x86_64-apple-darwin
+          # Add compiler flags to handle Boost compilation
+          export CXXFLAGS="-Wno-error=enum-constexpr-conversion"
+          export CPPFLAGS="-Wno-error=enum-constexpr-conversion"
+          # Build dependencies with warning suppression
+          make -j$(sysctl -n hw.ncpu) HOST=x86_64-apple-darwin BOOST_CXXFLAGS="-Wno-error"
           cd ..
 
       - name: Build Deccord for macOS
@@ -42,8 +46,10 @@ jobs:
           cd deccord
           ./autogen.sh
           export BDB_PREFIX="$(brew --prefix berkeley-db@4)"
+          # Configure with proper flags
           CONFIG_SITE=$PWD/depends/x86_64-apple-darwin/share/config.site ./configure --prefix=/ \
-            --disable-tests --disable-bench --enable-static
+            --disable-tests --disable-bench --enable-static \
+            CXXFLAGS="-Wno-error=enum-constexpr-conversion"
           make -j$(sysctl -n hw.ncpu)
 
       - name: Strip Binaries
