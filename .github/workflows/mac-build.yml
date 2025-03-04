@@ -35,6 +35,8 @@ jobs:
           cd deccord
           PATH=$(echo "$PATH" | sed -e 's/:\/mnt.*//g')
           cd depends
+          export CXXFLAGS="-Wno-enum-constexpr-conversion"
+          export CFLAGS="-Wno-enum-constexpr-conversion"
           make HOST=x86_64-apple-darwin -j$(sysctl -n hw.ncpu)
           cd ..
 
@@ -45,6 +47,7 @@ jobs:
           export BDB_PREFIX="$(brew --prefix berkeley-db@4)"
           export LDFLAGS="-L${BDB_PREFIX}/lib -L$(brew --prefix openssl)/lib"
           export CPPFLAGS="-I${BDB_PREFIX}/include -I$(brew --prefix openssl)/include"
+          export CXXFLAGS="-std=c++17 -Wno-enum-constexpr-conversion"
           CONFIG_SITE=$PWD/depends/x86_64-apple-darwin/share/config.site ./configure --prefix=/ \
             --disable-tests --disable-shared
           if [ -f "src/deccordd" ]; then
