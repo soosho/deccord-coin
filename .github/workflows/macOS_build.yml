@@ -7,11 +7,11 @@ on:
   pull_request:
     branches:
       - main
-  workflow_dispatch:
+  workflow_dispatch:  # Allows you to manually trigger the workflow
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-latest  # Use macOS runner
     
     steps:
       - name: Checkout the repository
@@ -54,7 +54,7 @@ jobs:
         run: |
           cd deccord
           ./autogen.sh
-          ./configure --with-bdb --with-gui --without-test --without-qt-tests
+          ./configure --with-bdb --with-gui --enable-wallet --without-test --without-qt-tests
           make HOST=x86_64-apple-darwin -j$(sysctl -n hw.ncpu)
         
       - name: Create the deployable .dmg
@@ -63,7 +63,7 @@ jobs:
           make deploy
 
       - name: Upload macOS build artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4  # Use the latest version (v4)
         with:
           name: deccord-macos-build
           path: ./deccord/deploy/*.dmg
