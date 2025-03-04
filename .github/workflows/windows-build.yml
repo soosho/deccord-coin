@@ -8,6 +8,14 @@ jobs:
     name: Build for Windows (x86_64-w64-mingw32)
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
       - name: Clean workspace
         run: |
           rm -rf deccord
@@ -21,13 +29,20 @@ jobs:
       - name: Setup dependencies for Windows
         run: |
           sudo apt-get update
-          sudo apt-get install -y make automake cmake curl g++-multilib libtool binutils-gold bsdmainutils pkg-config python3 patch bison
-          sudo apt-get install -y g++-mingw-w64-x86-64
+          sudo apt-get install -y make automake cmake curl g++-multilib libtool \
+            binutils-gold bsdmainutils pkg-config python3 patch bison \
+            g++-mingw-w64-x86-64 mingw-w64-tools
           sudo update-alternatives --set x86_64-w64-mingw32-g++ /usr/bin/x86_64-w64-mingw32-g++-posix
 
       - name: Install Berkeley DB
         run: |
           cd deccord
+          # Add system types header include
+          echo '#include <stdint.h>' > db4.patch
+          echo '#include <sys/types.h>' >> db4.patch
+          cat ./contrib/install_db4.sh >> db4.patch
+          mv db4.patch ./contrib/install_db4.sh
+          chmod +x ./contrib/install_db4.sh
           ./contrib/install_db4.sh `pwd`
           export BDB_PREFIX="${PWD}/db4"
 
@@ -47,8 +62,9 @@ jobs:
           CONFIG_SITE=$PWD/depends/x86_64-w64-mingw32/share/config.site ./configure --prefix=/ \
             BDB_LIBS="-L${BDB_PREFIX}/lib -ldb_cxx-4.8" \
             BDB_CFLAGS="-I${BDB_PREFIX}/include" \
-            --disable-tests --disable-shared
-          make
+            --disable-tests --disable-shared \
+            CXXFLAGS="-std=c++11"
+          make -j$(nproc)
 
       - name: Strip Binaries
         run: |
