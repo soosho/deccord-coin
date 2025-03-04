@@ -26,6 +26,14 @@ jobs:
           cd deccord
           chmod -R 777 .
 
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: depends/
+          key: ${{ runner.os }}-depends-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-depends-
+
       - name: Setup dependencies for Windows
         run: |
           sudo apt-get update
@@ -38,12 +46,6 @@ jobs:
       - name: Install Berkeley DB
         run: |
           cd deccord
-          # Add system types header include
-          echo '#include <stdint.h>' > db4.patch
-          echo '#include <sys/types.h>' >> db4.patch
-          cat ./contrib/install_db4.sh >> db4.patch
-          mv db4.patch ./contrib/install_db4.sh
-          chmod +x ./contrib/install_db4.sh
           ./contrib/install_db4.sh `pwd`
           export BDB_PREFIX="${PWD}/db4"
 
