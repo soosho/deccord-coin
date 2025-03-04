@@ -6,7 +6,7 @@ on:
 jobs:
   build:
     name: Build for macOS
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -26,36 +26,34 @@ jobs:
           cd deccord
           chmod -R 777 .
 
-      - name: Setup dependencies for macOS
+      - name: Setup dependencies
         run: |
-          brew install automake cmake curl libtool pkg-config python3 bison berkeley-db@4 openssl boost
+          sudo apt-get update
+          sudo apt-get install -y build-essential libtool autotools-dev automake pkg-config bsdmainutils curl git
+          sudo apt-get install -y cmake libcap-dev libz-dev libbz2-dev python3-dev
+          sudo apt-get install -y g++-multilib gcc-multilib binutils-gold
+          sudo apt-get install -y clang llvm-dev libclang-dev libedit-dev
 
       - name: Build depends
         run: |
           cd deccord
           cd depends
-          # Add compiler flags to handle Boost compilation
-          export CXXFLAGS="-Wno-error=enum-constexpr-conversion"
-          export CPPFLAGS="-Wno-error=enum-constexpr-conversion"
-          # Build dependencies with warning suppression
-          make -j$(sysctl -n hw.ncpu) HOST=x86_64-apple-darwin BOOST_CXXFLAGS="-Wno-error"
+          make HOST=x86_64-apple-darwin -j$(nproc)
           cd ..
 
       - name: Build Deccord for macOS
         run: |
           cd deccord
           ./autogen.sh
-          export BDB_PREFIX="$(brew --prefix berkeley-db@4)"
-          # Configure with proper flags
           CONFIG_SITE=$PWD/depends/x86_64-apple-darwin/share/config.site ./configure --prefix=/ \
             --disable-tests --disable-bench --enable-static \
-            CXXFLAGS="-Wno-error=enum-constexpr-conversion"
-          make -j$(sysctl -n hw.ncpu)
+            --disable-shared
+          make -j$(nproc)
 
       - name: Strip Binaries
         run: |
           cd deccord
-          strip src/deccordd src/deccord-cli src/deccord-tx src/qt/deccord-qt
+          x86_64-apple-darwin-strip src/deccordd src/deccord-cli src/deccord-tx src/qt/deccord-qt
 
       - name: Create Release Structure
         run: |
